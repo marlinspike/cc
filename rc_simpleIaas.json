@@ -1,0 +1,86 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "rcnetstorageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    }
+  
+   
+    },
+    "variables": {
+      "vpc_cc_prefix": "172.16.0.0/20",
+      "vpc_ccSubnet1Name": "subnet-web",
+      "vpc_ccSubnet1Prefix": "172.16.1.0/24",
+      "vpc_ccSubnet2Name": "subnet-middleware",
+      "vpc_ccSubnet2Prefix": "172.16.2.0/24",
+      "vpc_ccSubnet3Name": "subnet-db",
+      "vpc_ccSubnet3Prefix": "172.16.3.0/24",
+      "ccnetstoragename": "[concat('rcstore', uniqueString(resourceGroup().id))]"
+
+    },
+    "resources": [
+      {
+        "name": "ccnet",
+        "type": "Microsoft.Network/virtualNetworks",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2016-03-30",
+        "dependsOn": [],
+        "tags": {
+          "displayName": "ccnet"
+        },
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": [
+              "[variables('vpc_cc_prefix')]"
+            ]
+          },
+          "subnets": [
+            {
+              "name": "[variables('vpc_ccSubnet1Name')]",
+              "properties": {
+                "addressPrefix": "[variables('vpc_ccSubnet1Prefix')]"
+              }
+            },
+            {
+              "name": "[variables('vpc_ccSubnet2Name')]",
+              "properties": {
+                "addressPrefix": "[variables('vpc_ccSubnet2Prefix')]"
+              }
+            },
+            {
+              "name": "[variables('vpc_ccSubnet3Name')]",
+              "properties": {
+                "addressPrefix": "[variables('vpc_ccSubnet3Prefix')]"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "[variables('ccnetstoragename')]",
+        "type": "Microsoft.Storage/storageAccounts",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2015-06-15",
+        "dependsOn": [],
+        "tags": {
+          "displayName": "rcnetstorage"
+        },
+        "properties": {
+          "accountType": "[parameters('rcnetstorageType')]"
+        }
+      }
+
+    ],
+    "outputs": {
+
+    }
+  }
