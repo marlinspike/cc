@@ -6,8 +6,14 @@ $resourceDeploymentName = 'ccnet'
 $templatePath = "\\tsclient\azure-share\CloudConcierge-ARM-Template"
 $templateFile = 'rc_simpleIaas.json'
 $template = $templatePath + '\' + $templateFile
+
+#Set up VM Passwords
 $vm_jumpbox_password = "Pres_jumpbox_1234#"
 $vm_jumpbox_secure_password = $vm_jumpbox_password | ConvertTo-SecureString -AsPlainText -Force
+
+$vm_web_password = "Pres_web_1234#"
+$vm_web_secure_password = $vm_web_password | ConvertTo-SecureString -AsPlainText -Force
+
 }
 
 ### Create Resource Group
@@ -22,6 +28,7 @@ New-AzureRmResourceGroup `
 {
 $additionalParameters = New-Object -TypeName Hashtable
 $additionalParameters['vm_jumpboxAdminPassword'] = $vm_jumpbox_secure_password
+$additionalParameters['vm_webAdminPassword'] = $vm_web_secure_password
 
 New-AzureRmResourceGroupDeployment `
     -Name $resourceDeploymentName `

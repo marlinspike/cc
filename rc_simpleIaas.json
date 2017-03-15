@@ -34,30 +34,61 @@
         "type": "string",
         "defaultValue": "vm-cc-jumpbox",
           "minLength": 1
-      }
+      },
+    "vm_webName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "webserver"
+    },
+    "vm_webAdminUserName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "cc_web_admin"
+    },
+      "vm_webAdminPassword": {
+          "type": "securestring"
+      },
+      "vm_webCentOSVersion": {
+          "type": "string",
+          "defaultValue": "7.2"
+      },
+    "vm_web_public_ipDnsName": {
+      "type": "string",
+      "defaultValue": "vm-cc-web",
+      "minLength": 1
+    }
   
    
     },
-    "variables": {
-      "vpc_cc_prefix": "172.16.0.0/20",
-      "vpc_ccSubnet1Name": "subnet-web",
-      "vpc_ccSubnet1Prefix": "172.16.1.0/24",
-      "vpc_ccSubnet2Name": "subnet-middleware",
-      "vpc_ccSubnet2Prefix": "172.16.2.0/24",
-      "vpc_ccSubnet3Name": "subnet-db",
-      "vpc_ccSubnet3Prefix": "172.16.3.0/24",
-      "ccnetstoragename": "[concat('rcstore', uniqueString(resourceGroup().id))]",
-        "vm_jumpboxImagePublisher": "OpenLogic",
-        "vm_jumpboxImageOffer": "CentOS",
-        "vm_jumpboxOSDiskName": "jumpboxOSDisk",
-        "vm_jumpboxVmSize": "Standard_D2_v2",
-        "vm_jumpboxVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'ccnet')]",
-        "vm_jumpboxSubnetRef": "[concat(variables('vm_jumpboxVnetID'), '/subnets/', variables('vpc_ccSubnet1Name'))]",
-        "jumpboxStorageAccountContainerName": "vhds",
-        "vm_jumpboxNicName": "[concat(parameters('jumpboxName'),'-', 'nic-0')]",
-        "vm_jumpbox_public_ipName": "jumpbox_public_ip"
+  "variables": {
+    "vpc_cc_prefix": "172.16.0.0/20",
+    "vpc_ccSubnet1Name": "subnet-web",
+    "vpc_ccSubnet1Prefix": "172.16.1.0/24",
+    "vpc_ccSubnet2Name": "subnet-middleware",
+    "vpc_ccSubnet2Prefix": "172.16.2.0/24",
+    "vpc_ccSubnet3Name": "subnet-db",
+    "vpc_ccSubnet3Prefix": "172.16.3.0/24",
+    "ccnetstoragename": "[concat('rcstore', uniqueString(resourceGroup().id))]",
+    "vm_jumpboxImagePublisher": "OpenLogic",
+    "vm_jumpboxImageOffer": "CentOS",
+    "vm_jumpboxOSDiskName": "jumpboxOSDisk",
+    "vm_jumpboxVmSize": "Standard_D2_v2",
+    "vm_jumpboxVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'ccnet')]",
+    "vm_jumpboxSubnetRef": "[concat(variables('vm_jumpboxVnetID'), '/subnets/', variables('vpc_ccSubnet1Name'))]",
+    "jumpboxStorageAccountContainerName": "vhds",
+    "vm_jumpboxNicName": "[concat(parameters('jumpboxName'),'-', 'nic-0')]",
+    "vm_jumpbox_public_ipName": "jumpbox_public_ip",
+    "vm_webImagePublisher": "OpenLogic",
+    "vm_webImageOffer": "CentOS",
+    "vm_webOSDiskName": "vm_webOSDisk",
+    "vm_webVmSize": "Standard_D2_v2",
+    "vm_webVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'ccnet')]",
+    "vm_webSubnetRef": "[concat(variables('vm_webVnetID'), '/subnets/', variables('vpc_ccSubnet1Name'))]",
+    "vm_webStorageAccountContainerName": "vhds",
+    "vm_webNicName": "[concat(parameters('vm_webName'),'-', 'nic-0')]",
+      "vm_web_public_ipName": "vm_web_public_ip"
 
-    },
+  },
     "resources": [
       {
         "name": "ccnet",
@@ -197,6 +228,97 @@
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
                     "domainNameLabel": "[parameters('vm_jumpbox_public_ipDnsName')]"
+                }
+            }
+        },
+        {
+            "name": "[variables('vm_webNicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2016-03-30",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', 'ccnet')]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('vm_web_public_ipName'))]"
+            ],
+          "tags": {
+            "displayName": "[variables('vm_webNicName')]"
+          },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('vm_webSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('vm_web_public_ipName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('vm_webName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('ccnetstoragename'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('vm_webNicName'))]"
+            ],
+            "tags": {
+                "displayName": "vm_web"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vm_webVmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vm_webName')]",
+                    "adminUsername": "[parameters('vm_webAdminUsername')]",
+                    "adminPassword": "[parameters('vm_webAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('vm_webImagePublisher')]",
+                        "offer": "[variables('vm_webImageOffer')]",
+                        "sku": "[parameters('vm_webCentOSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "vm_webOSDisk",
+                        "vhd": {
+                            "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('ccnetstoragename')), '2016-01-01').primaryEndpoints.blob, variables('vm_webStorageAccountContainerName'), '/', variables('vm_webOSDiskName'), '.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vm_webNicName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[variables('vm_web_public_ipName')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2016-03-30",
+            "dependsOn": [ ],
+            "tags": {
+                "displayName": "vm_web_public_ip"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('vm_web_public_ipDnsName')]"
                 }
             }
         }
