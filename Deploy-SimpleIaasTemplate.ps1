@@ -1,6 +1,6 @@
 ﻿### Define variables
 {
-$location = 'Australia Southeast'
+$location = 'West Central US'
 $resourceGroupName = 'ccnet_resources_new'
 $resourceDeploymentName = 'ccnet'
 $templatePath = "\\tsclient\azure-share\CloudConcierge-ARM-Template"
@@ -13,6 +13,12 @@ $vm_jumpbox_secure_password = $vm_jumpbox_password | ConvertTo-SecureString -AsP
 
 $vm_web_password = "Pres_web_1234#"
 $vm_web_secure_password = $vm_web_password | ConvertTo-SecureString -AsPlainText -Force
+
+$vm_conductor_password = "Pres_conductor_1234#"
+$vm_conductor_secure_password = $vm_conductor_password | ConvertTo-SecureString -AsPlainText -Force
+
+$vm_db_password = "Pres_db_1234#"
+$vm_db_secure_password = $vm_db_password | ConvertTo-SecureString -AsPlainText -Force
 
 }
 
@@ -29,6 +35,8 @@ New-AzureRmResourceGroup `
 $additionalParameters = New-Object -TypeName Hashtable
 $additionalParameters['vm_jumpboxAdminPassword'] = $vm_jumpbox_secure_password
 $additionalParameters['vm_webAdminPassword'] = $vm_web_secure_password
+$additionalParameters['vm_conductorAdminPassword'] = $vm_conductor_secure_password
+$additionalParameters['vm_dbAdminPassword'] = $vm_db_secure_password
 
 New-AzureRmResourceGroupDeployment `
     -Name $resourceDeploymentName `

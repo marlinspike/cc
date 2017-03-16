@@ -1,0 +1,781 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_vm_jumpbox01_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_vm_middleware01_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_vm_mongo01_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_vm_web01_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_vm_jumpbox01_name": {
+            "defaultValue": "vm-jumpbox01",
+            "type": "String"
+        },
+        "virtualMachines_vm_middleware01_name": {
+            "defaultValue": "vm-middleware01",
+            "type": "String"
+        },
+        "virtualMachines_vm_mongo01_name": {
+            "defaultValue": "vm-mongo01",
+            "type": "String"
+        },
+        "virtualMachines_vm_web01_name": {
+            "defaultValue": "vm-web01",
+            "type": "String"
+        },
+        "networkInterfaces_vm_jumpbox01176_name": {
+            "defaultValue": "vm-jumpbox01176",
+            "type": "String"
+        },
+        "networkInterfaces_vm_middleware01730_name": {
+            "defaultValue": "vm-middleware01730",
+            "type": "String"
+        },
+        "networkInterfaces_vm_mongo01794_name": {
+            "defaultValue": "vm-mongo01794",
+            "type": "String"
+        },
+        "networkInterfaces_vm_web01456_name": {
+            "defaultValue": "vm-web01456",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_subnet_db_name": {
+            "defaultValue": "nsg_subnet_db",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_subnet_middleware_name": {
+            "defaultValue": "nsg_subnet_middleware",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_subnet_web_name": {
+            "defaultValue": "nsg_subnet_web",
+            "type": "String"
+        },
+        "networkSecurityGroups_vm_jumpbox01_nsg_name": {
+            "defaultValue": "vm-jumpbox01-nsg",
+            "type": "String"
+        },
+        "networkSecurityGroups_vm_middleware01_nsg_name": {
+            "defaultValue": "vm-middleware01-nsg",
+            "type": "String"
+        },
+        "networkSecurityGroups_vm_mongo01_nsg_name": {
+            "defaultValue": "vm-mongo01-nsg",
+            "type": "String"
+        },
+        "networkSecurityGroups_vm_web01_nsg_name": {
+            "defaultValue": "vm-web01-nsg",
+            "type": "String"
+        },
+        "publicIPAddresses_vm_jumpbox01_ip_name": {
+            "defaultValue": "vm-jumpbox01-ip",
+            "type": "String"
+        },
+        "publicIPAddresses_vm_middleware01_ip_name": {
+            "defaultValue": "vm-middleware01-ip",
+            "type": "String"
+        },
+        "publicIPAddresses_vm_mongo01_ip_name": {
+            "defaultValue": "vm-mongo01-ip",
+            "type": "String"
+        },
+        "publicIPAddresses_vm_web01_ip_name": {
+            "defaultValue": "vm-web01-ip",
+            "type": "String"
+        },
+        "virtualNetworks_vpc_concierge_name": {
+            "defaultValue": "vpc_concierge",
+            "type": "String"
+        },
+        "storageAccounts_storage4diagnostics_name": {
+            "defaultValue": "storage4diagnostics",
+            "type": "String"
+        },
+        "storageAccounts_storagecloudconcierge_name": {
+            "defaultValue": "storagecloudconcierge",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Compute/virtualMachines/vm-jumpbox01'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vm_jumpbox01_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vm_jumpbox01_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storagecloudconcierge_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_jumpbox01_name'),'20170310125432.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_jumpbox01_name')]",
+                    "adminUsername": "jumpbox01-user",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vm_jumpbox01_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_jumpbox01176_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagecloudconcierge_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_jumpbox01176_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Compute/virtualMachines/vm-middleware01'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vm_middleware01_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vm_middleware01_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storagecloudconcierge_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_middleware01_name'),'20170310125034.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_middleware01_name')]",
+                    "adminUsername": "middleware01-user",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vm_middleware01_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_middleware01730_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagecloudconcierge_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_middleware01730_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Compute/virtualMachines/vm-mongo01'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vm_mongo01_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vm_mongo01_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storagecloudconcierge_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_mongo01_name'),'20170310124327.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_mongo01_name')]",
+                    "adminUsername": "mongo01-user",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vm_mongo01_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_mongo01794_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagecloudconcierge_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_mongo01794_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Compute/virtualMachines/vm-web01'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vm_web01_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vm_web01_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storagecloudconcierge_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_web01_name'),'20170310125229.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_web01_name')]",
+                    "adminUsername": "web01-user",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vm_web01_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_web01456_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storagecloudconcierge_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_web01456_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkInterfaces/vm-jumpbox01176'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vm_jumpbox01176_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.3.5",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_jumpbox01_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name')), '/subnets/subnet_web')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_jumpbox01_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_jumpbox01_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_jumpbox01_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkInterfaces/vm-middleware01730'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vm_middleware01730_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.2.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name')), '/subnets/subnet_middleware')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_middleware01_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_middleware01_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkInterfaces/vm-mongo01794'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vm_mongo01794_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.1.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name')), '/subnets/subnet_db')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_mongo01_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_mongo01_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkInterfaces/vm-web01456'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vm_web01456_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.3.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_web01_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name')), '/subnets/subnet_web')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_web01_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_web01_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vpc_concierge_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_web01_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/nsg_subnet_db'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_nsg_subnet_db_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow_ssh_from_jumpbox",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "10.0.3.5/32",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "deny_ssh_from_elsewhere",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 200,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/nsg_subnet_middleware'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_nsg_subnet_middleware_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow_ssh_from_jumpbox",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "10.0.3.5/32",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "deny_ssh_from_elsewhere",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 200,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/nsg_subnet_web'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_nsg_subnet_web_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow_ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/vm-jumpbox01-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_vm_jumpbox01_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/vm-middleware01-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_vm_middleware01_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/vm-mongo01-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_vm_mongo01_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/networkSecurityGroups/vm-web01-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_vm_web01_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/publicIPAddresses/vm-jumpbox01-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_vm_jumpbox01_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/publicIPAddresses/vm-middleware01-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_vm_middleware01_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/publicIPAddresses/vm-mongo01-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_vm_mongo01_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/publicIPAddresses/vm-web01-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_vm_web01_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Network/virtualNetworks/vpc_concierge'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_vpc_concierge_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/20"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "subnet_db",
+                        "properties": {
+                            "addressPrefix": "10.0.1.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_subnet_db_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "subnet_middleware",
+                        "properties": {
+                            "addressPrefix": "10.0.2.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_subnet_middleware_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "subnet_web",
+                        "properties": {
+                            "addressPrefix": "10.0.3.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_subnet_web_name'))]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_subnet_db_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_subnet_middleware_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_subnet_web_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Storage/storageAccounts/storage4diagnostics'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_storage4diagnostics_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus",
+            "tags": {},
+            "properties": {},
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8e053aca-8276-4747-a69b-0560f48f592b/resourceGroups/rg_concierge/providers/Microsoft.Storage/storageAccounts/storagecloudconcierge'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_storagecloudconcierge_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus",
+            "tags": {},
+            "properties": {
+                "encryption": {
+                    "keySource": "Microsoft.Storage",
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
