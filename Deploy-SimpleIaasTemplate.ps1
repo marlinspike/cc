@@ -1,7 +1,7 @@
 ﻿### Define variables
 {
-$location = 'West Central US'
-$resourceGroupName = 'ccnet_resources_new'
+$location = 'North Central US'
+$resourceGroupName = 'ccnet_resources'
 $resourceDeploymentName = 'ccnet'
 $templatePath = "\\tsclient\azure-share\CloudConcierge-ARM-Template"
 $templateFile = 'rc_simpleIaas.json'
@@ -37,6 +37,7 @@ $additionalParameters['vm_jumpboxAdminPassword'] = $vm_jumpbox_secure_password
 $additionalParameters['vm_webAdminPassword'] = $vm_web_secure_password
 $additionalParameters['vm_conductorAdminPassword'] = $vm_conductor_secure_password
 $additionalParameters['vm_dbAdminPassword'] = $vm_db_secure_password
+$additionalParameters['deployment_location'] = $location
 
 New-AzureRmResourceGroupDeployment `
     -Name $resourceDeploymentName `

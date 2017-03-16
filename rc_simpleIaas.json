@@ -13,28 +13,28 @@
         "Premium_LRS"
       ]
     },
-      "jumpboxName": {
-          "type": "string",
-        "minLength": 1,
-        "defaultValue": "bastion-host"
-      },
-      "vm_jumpboxAdminUserName": {
-          "type": "string",
-        "minLength": 1,
-        "defaultValue": "cc_jumpbox_admin"
-      },
-      "vm_jumpboxAdminPassword": {
-          "type": "securestring"
-      },
-      "vm_jumpboxCentOSVersion": {
-          "type": "string",
-          "defaultValue": "7.2"
-      },
-      "vm_jumpbox_public_ipDnsName": {
-        "type": "string",
-        "defaultValue": "vm-cc-jumpbox",
-          "minLength": 1
-      },
+    "jumpboxName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "bastion-host"
+    },
+    "vm_jumpboxAdminUserName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "cc_jumpbox_admin"
+    },
+    "vm_jumpboxAdminPassword": {
+      "type": "securestring"
+    },
+    "vm_jumpboxCentOSVersion": {
+      "type": "string",
+      "defaultValue": "7.2"
+    },
+    "vm_jumpbox_public_ipDnsName": {
+      "type": "string",
+      "defaultValue": "vm-cc-jumpbox",
+      "minLength": 1
+    },
     "vm_webName": {
       "type": "string",
       "minLength": 1,
@@ -45,31 +45,31 @@
       "minLength": 1,
       "defaultValue": "cc_web_admin"
     },
-      "vm_webAdminPassword": {
-          "type": "securestring"
-      },
-      "vm_webCentOSVersion": {
-          "type": "string",
-          "defaultValue": "7.2"
-      },
+    "vm_webAdminPassword": {
+      "type": "securestring"
+    },
+    "vm_webCentOSVersion": {
+      "type": "string",
+      "defaultValue": "7.2"
+    },
     "vm_web_public_ipDnsName": {
       "type": "string",
       "defaultValue": "vm-cc-web",
       "minLength": 1
     },
-      "vm_conductorName": {
-          "type": "string",
-        "minLength": 1,
-        "defaultValue": "conductor"
-      },
-      "vm_conductorAdminUserName": {
-          "type": "string",
-        "minLength": 1,
-        "defaultValue": "cc_conductor_admin"
-      },
-      "vm_conductorAdminPassword": {
-          "type": "securestring"
-      },
+    "vm_conductorName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "conductor"
+    },
+    "vm_conductorAdminUserName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "cc_conductor_admin"
+    },
+    "vm_conductorAdminPassword": {
+      "type": "securestring"
+    },
     "vm_conductorCentOSVersion": {
       "type": "string",
       "defaultValue": "7.2"
@@ -84,16 +84,20 @@
       "minLength": 1,
       "defaultValue": "cc_db_admin"
     },
-      "vm_dbAdminPassword": {
-          "type": "securestring"
-      },
+    "vm_dbAdminPassword": {
+      "type": "securestring"
+    },
     "vm_dbCentOSVersion": {
       "type": "string",
       "defaultValue": "7.2"
-    }
-  
-   
     },
+    "deployment_location": {
+      "type": "string",
+      "defaultValue": "West Central US"
+    }
+
+
+  },
   "variables": {
     "vpc_cc_prefix": "172.16.0.0/20",
     "vpc_ccSubnet1Name": "subnet-web",
@@ -143,7 +147,8 @@
     "vm_dbNicName": "[concat(parameters('vm_dbName'),'-', 'nic-0')]",
 
     "nsg_subnet_db_name": "nsg_subnet_db",
-    "nsg_subnet_middleware_name":  "nsg_subnet_middleware"
+    "nsg_subnet_middleware_name": "nsg_subnet_middleware",
+    "nsg_subnet_web_name": "nsg_subnet_web"
 
   },
   "resources": [
@@ -152,7 +157,11 @@
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
       "apiVersion": "2016-03-30",
-      "dependsOn": [],
+      "dependsOn": [
+        //NSGs for Subnets
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsg_subnet_db_name'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsg_subnet_middleware_name'))]"
+      ],
       "tags": {
         "displayName": "ccnet"
       },
@@ -172,8 +181,11 @@
           {
             "name": "[variables('vpc_ccSubnet2Name')]",
             "properties": {
-              "addressPrefix": "[variables('vpc_ccSubnet2Prefix')]"
+              "addressPrefix": "[variables('vpc_ccSubnet2Prefix')]",
               //Add NSG Here
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg_subnet_middleware_name'))]"
+              }
             }
           },
           {
@@ -538,7 +550,7 @@
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('nsg_subnet_db_name')]",
       "apiVersion": "2016-03-30",
-      "location": "West Central US",
+      "location": "[parameters('deployment_location')]",
       "properties": {
         "securityRules": [
           {
@@ -576,7 +588,7 @@
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('nsg_subnet_middleware_name')]",
       "apiVersion": "2016-03-30",
-      "location": "West Central US",
+      "location": "[parameters('deployment_location')]",
       "properties": {
         "securityRules": [
           {
