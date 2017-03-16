@@ -149,7 +149,8 @@
     "nsg_subnet_db_name": "nsg_subnet_db",
     "nsg_subnet_middleware_name": "nsg_subnet_middleware",
     "nsg_subnet_web_name": "nsg_subnet_web",
-    "nsg_vm_jumpbox_name": "nsg_vm_jumpbox"
+    "nsg_vm_jumpbox_name": "nsg_vm_jumpbox",
+    "nsg_vm_web_name": "nsg_vm_web"
 
   },
   "resources": [
@@ -220,6 +221,7 @@
         "accountType": "[parameters('rcnetstorageType')]"
       }
     },
+    //Jumpbox NIC
     {
       "name": "[variables('vm_jumpboxNicName')]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -317,6 +319,7 @@
         }
       }
     },
+    //WebServer NIC
     {
       "name": "[variables('vm_webNicName')]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -343,7 +346,11 @@
               }
             }
           }
-        ]
+        ],
+        //NSG for WebServer attached
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg_vm_web_name'))]"
+        }
       }
     },
     {
@@ -678,6 +685,46 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 1000,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      },
+      "dependsOn": []
+    },
+    //NSG for WebServer VM
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('nsg_vm_web_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "[parameters('deployment_location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow_ssh_from_jumpbox",
+            "location": "[parameters('deployment_location')]",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[concat(variables('vm_jumpboxPrivateIPAddress'),'/32')]", //"10.0.3.5/32",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "deny_ssh_from_elsewhere",
+            "location": "[parameters('deployment_location')]",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 200,
               "direction": "Inbound"
             }
           }
